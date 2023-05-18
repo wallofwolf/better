@@ -1,6 +1,6 @@
 'use client';
 
-import { getTodayDate, sortOfWorkout } from '@/app/data';
+import { getTodayDate, sortOfWorkout, uuid } from '@/app/data';
 import { useParams, useRouter } from 'next/navigation';
 import { ChangeEvent, useState } from 'react';
 import { IoAddOutline, IoCloseOutline } from 'react-icons/io5';
@@ -28,7 +28,6 @@ const StartingPage = () => {
   const [weight, setWeight] = useState('');
   const [reps, setReps] = useState('');
   const [selectedItem, setSelectedItem] = useState('');
-  const uuid = self.crypto.randomUUID();
 
   const deleteWorkout = (id: string) => {
     setWorkoutList((prevWorkoutList) => prevWorkoutList.filter((item: Workout) => item.id !== id));

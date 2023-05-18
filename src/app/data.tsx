@@ -20,3 +20,76 @@ export const getTodayDate = () => {
   const todayString = `${year}년 ${month}월 ${date}일 ${dayString}`;
   return todayString;
 };
+
+export const uuid = self.crypto.randomUUID();
+
+// 요소 100를 가진 배열 생성
+export const chain = Array.from({ length: 110 }, (_, i) => i);
+
+export const images = [
+  'https://picsum.photos/200/300?random=1',
+  'https://picsum.photos/200/300?random=2',
+  'https://picsum.photos/200/300?random=3',
+  'https://picsum.photos/200/300?random=4',
+  'https://picsum.photos/200/300?random=5',
+];
+
+export const bodyPartsList = ['가슴', '어깨', '하체', '등', '팔'];
+
+export const data = [
+  {
+    name: 'Page A',
+    체중: 80,
+    지방량: 30,
+    골격근량: 50,
+  },
+  {
+    name: 'Page B',
+    체중: 80,
+    지방량: 28,
+    골격근량: 51,
+  },
+  {
+    name: 'Page C',
+    체중: 76,
+    지방량: 27,
+    골격근량: 52,
+  },
+  {
+    name: 'Page D',
+    체중: 77,
+    지방량: 24,
+    골격근량: 55,
+  },
+  {
+    name: 'Page E',
+    체중: 77,
+    지방량: 20,
+    골격근량: 60,
+  },
+  {
+    name: 'Page F',
+    체중: 77,
+    지방량: 19,
+    골격근량: 62,
+  },
+  {
+    name: 'Page G',
+    체중: 77,
+    지방량: 15,
+    골격근량: 70,
+  },
+];
+
+export const items = [
+  { title: 'Item 1', description: 'This is item 1' },
+  { title: 'Item 2', description: 'This is item 2' },
+  { title: 'Item 3', description: 'This is item 3' },
+  { title: 'Item 3', description: 'This is item 3' },
+  { title: 'Item 3', description: 'This is item 3' },
+  { title: 'Item 3', description: 'This is item 3' },
+  { title: 'Item 3', description: 'This is item 3' },
+  { title: 'Item 3', description: 'This is item 3' },
+  { title: 'Item 3', description: 'This is item 3' },
+  // Add as many items as you want
+];

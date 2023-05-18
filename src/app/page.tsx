@@ -1,92 +1,23 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { IoArrowBackOutline, IoArrowForwardOutline } from 'react-icons/io5';
 import {
   Area,
   AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  BarChart,
-  Bar,
 } from 'recharts';
 import styled from 'styled-components';
 import { supabase } from '../../lib/superbase';
-
-// 요소 100를 가진 배열 생성
-const chain = Array.from({ length: 110 }, (_, i) => i);
-
-const images = [
-  'https://picsum.photos/200/300?random=1',
-  'https://picsum.photos/200/300?random=2',
-  'https://picsum.photos/200/300?random=3',
-  'https://picsum.photos/200/300?random=4',
-  'https://picsum.photos/200/300?random=5',
-];
-
-const bodyPartsList = ['가슴', '어깨', '하체', '등', '팔'];
-
-const data = [
-  {
-    name: 'Page A',
-    체중: 80,
-    지방량: 30,
-    골격근량: 50,
-  },
-  {
-    name: 'Page B',
-    체중: 80,
-    지방량: 28,
-    골격근량: 51,
-  },
-  {
-    name: 'Page C',
-    체중: 76,
-    지방량: 27,
-    골격근량: 52,
-  },
-  {
-    name: 'Page D',
-    체중: 77,
-    지방량: 24,
-    골격근량: 55,
-  },
-  {
-    name: 'Page E',
-    체중: 77,
-    지방량: 20,
-    골격근량: 60,
-  },
-  {
-    name: 'Page F',
-    체중: 77,
-    지방량: 19,
-    골격근량: 62,
-  },
-  {
-    name: 'Page G',
-    체중: 77,
-    지방량: 15,
-    골격근량: 70,
-  },
-];
-
-const items = [
-  { title: 'Item 1', description: 'This is item 1' },
-  { title: 'Item 2', description: 'This is item 2' },
-  { title: 'Item 3', description: 'This is item 3' },
-  { title: 'Item 3', description: 'This is item 3' },
-  { title: 'Item 3', description: 'This is item 3' },
-  { title: 'Item 3', description: 'This is item 3' },
-  { title: 'Item 3', description: 'This is item 3' },
-  { title: 'Item 3', description: 'This is item 3' },
-  { title: 'Item 3', description: 'This is item 3' },
-  // Add as many items as you want
-];
+import WorkoutToday from './components/WorkoutToday';
+import { chain, data, items } from './data';
+import RecordBodyStatus from './components/RecordBodyStatus';
 
 const Home = () => {
   // 데이터 가져오기
@@ -97,6 +28,7 @@ const Home = () => {
     else console.log('Data: ', data);
   }
 
+  // 유튜브 가져오기
   const api =
     'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=30&q=운동&key=AIzaSyAed5yCicGD71RKvBz2182ewsrJxaf-DPc';
 
@@ -106,23 +38,7 @@ const Home = () => {
     console.log('🚀 ~ file: page.tsx:95 ~ getWokroutVideos ~ data:', data);
   };
 
-  // 데이터 생성하기
-  async function createWorkout() {
-    const { data, error } = await supabase
-      .from('workouts')
-      .insert([
-        { 
-          name: 'Morning Run', 
-          duration: 30, 
-          type: 'Running', 
-          date: new Date().toISOString() 
-        },
-      ]);
-  
-    if (error) console.error('Error: ', error)
-    else console.log('Created workout: ', data)
-  }
-
+  // 운동 배우기
   const carouselRef = useRef(null);
 
   const handlePrev = () => {
@@ -133,33 +49,13 @@ const Home = () => {
     carouselRef.current.scrollBy({ left: carouselRef.current.offsetWidth, behavior: 'smooth' });
   };
 
-  const router = useRouter();
   const [current, setCurrent] = useState(0);
-  const getTodayDate = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    const date = today.getDate();
-    const day = today.getDay();
-    const dayString = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'][day];
-    const todayString = `${year}년 ${month}월 ${date}일 ${dayString}`;
-    return todayString;
-  };
+
   return (
     <Container>
       <Box1>
         <MediumWidget>
-          <WorkoutTodayTitle>오늘 할 운동</WorkoutTodayTitle>
-          <WorkoutTodayDate>{getTodayDate()}</WorkoutTodayDate>
-          <WorkoutSelectBox>
-            {bodyPartsList.map((bodyPart) => (
-              <Workout
-                onClick={() => router.push(`/workout/${bodyPart}`)}
-                key={bodyPart}>
-                {bodyPart}
-              </Workout>
-            ))}
-          </WorkoutSelectBox>
+          <WorkoutToday />
         </MediumWidget>
         <MediumWidget>
           <DonTBreakTheChainTitle>연속으로 운동한지 110일째!</DonTBreakTheChainTitle>
@@ -274,27 +170,7 @@ const Home = () => {
       </Box2>
       <Box3>
         <MediumWidget>
-          <RecordBodyStatusTitle>신체 상태 기록하기</RecordBodyStatusTitle>
-          <RecordBodyStatusBox>
-            <RecordBodyStatusInputBox>
-              <RecordBodyStatusInput
-                type='text'
-                placeholder='체중 (KG)'
-                maxLength={3}
-              />
-              <RecordBodyStatusInput
-                type='text'
-                placeholder='골격근량 (KG)'
-                maxLength={3}
-              />
-              <RecordBodyStatusInput
-                type='text'
-                placeholder='지방량 (KG)'
-                maxLength={3}
-              />
-            </RecordBodyStatusInputBox>
-            <RecordBodyStatusBtn>기록</RecordBodyStatusBtn>
-          </RecordBodyStatusBox>
+          <RecordBodyStatus />
         </MediumWidget>
         <MediumWidget>
           <ResponsiveContainer
@@ -395,49 +271,6 @@ export default Home;
 
 // 신체 대시보드
 
-// 신체 기록
-const RecordBodyStatusTitle = styled.div`
-  font-size: 2rem;
-  font-weight: bolder;
-  color: #ffffff;
-`;
-const RecordBodyStatusBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const RecordBodyStatusInputBox = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const RecordBodyStatusInput = styled.input`
-  border: none;
-  outline: none;
-  border-radius: 5px;
-  padding: 0.5rem;
-  background-color: #0000003e;
-  color: #ffffff;
-  &::placeholder {
-    color: #b8b8b8;
-  }
-`;
-const RecordBodyStatusBtn = styled.button`
-  background-color: #e132ba;
-  width: 100%;
-  height: 3rem;
-  font-size: 1rem;
-  color: #ffffff;
-  margin: 0 auto;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  &:hover {
-    background-color: #ffffff7d;
-  }
-`;
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -516,36 +349,6 @@ const LargeWidget = styled.div`
   }
   @media (max-width: 767px) {
     width: 16rem;
-  }
-`;
-
-// 오늘 할 운동
-const WorkoutTodayTitle = styled.div`
-  font-size: 2rem;
-  font-weight: bolder;
-  color: #ffffff;
-`;
-const WorkoutTodayDate = styled.div`
-  font-size: 1.5rem;
-  color: #8cc8f9;
-`;
-const WorkoutSelectBox = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 0.7rem;
-`;
-const Workout = styled.button`
-  font-size: 1rem;
-  font-weight: bold;
-  width: 5rem;
-  height: 2.5rem;
-  border: none;
-  border-radius: 0.625rem;
-  background-color: #e132ba;
-  color: #000000;
-  cursor: pointer;
-  &:hover {
-    background-color: #ffffff7d;
   }
 `;
 
