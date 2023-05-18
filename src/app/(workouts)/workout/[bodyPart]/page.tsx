@@ -1,7 +1,7 @@
 'use client';
 
-import { sortOfWorkout, getTodayDate } from '@/app/data';
-import { useParams } from 'next/navigation';
+import { getTodayDate, sortOfWorkout } from '@/app/data';
+import { useParams, useRouter } from 'next/navigation';
 import { ChangeEvent, useState } from 'react';
 import { IoAddOutline, IoCloseOutline } from 'react-icons/io5';
 import styled from 'styled-components';
@@ -19,6 +19,7 @@ interface Workout {
 }
 
 const StartingPage = () => {
+  const router = useRouter();
   const { bodyPart } = useParams();
   const bodyPartInKorean = decodeURIComponent(bodyPart);
   const [workoutList, setWorkoutList] = useState<Workout[]>([]);
@@ -53,6 +54,7 @@ const StartingPage = () => {
       ]);
       if (error) console.error('Error: ', error);
       else console.log('Created workout: ', data);
+      router.push('/');
     });
   };
 
