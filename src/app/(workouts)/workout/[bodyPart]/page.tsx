@@ -1,34 +1,61 @@
 'use client';
 
+import { sortOfWorkout, getTodayDate } from '@/app/data';
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { IoAddOutline, IoCloseOutline } from 'react-icons/io5';
 import styled from 'styled-components';
+import { supabase } from '../../../../../lib/superbase';
 
-const sortOfWorkout = {
-  가슴: ['플랫 벤치 프레스', '인클라인 벤치 프레스', '덤벨 프레스', '인클라인 덤벨 프레스'],
-  어깨: ['밀리터리 프레스', '덤벨 숄더 프레스', '프론트 레이즈', '사이드 레터럴 레이즈'],
-  하체: ['스쿼트', '레그 익스텐션', '레그컬', '런지', '힙스러스트'],
-  등: ['랫 풀 다운', '시티드 로우', '풀 업'],
-  팔: ['바벨 컬', '케이블 푸쉬 다운'],
-};
+interface Workout {
+  id: string;
+  date: string;
+  part: string;
+  name: string;
+  sets: string;
+  reps: string;
+  weight: string;
+  isDone: boolean;
+}
 
 const StartingPage = () => {
   const { bodyPart } = useParams();
   const bodyPartInKorean = decodeURIComponent(bodyPart);
-  const [workoutList, setWorkoutList] = useState([]);
+  const [workoutList, setWorkoutList] = useState<Workout[]>([]);
   const [name, setName] = useState('');
   const [sets, setSets] = useState('');
   const [weight, setWeight] = useState('');
   const [reps, setReps] = useState('');
   const [selectedItem, setSelectedItem] = useState('');
   const uuid = self.crypto.randomUUID();
-  const handleDelete = (id) => {
-    setWorkoutList((prevWorkoutList) => prevWorkoutList.filter((item) => item.id !== id));
+
+  const deleteWorkout = (id: string) => {
+    setWorkoutList((prevWorkoutList) => prevWorkoutList.filter((item: Workout) => item.id !== id));
   };
-  const handleChange = (event) => {
+
+  const handleWorkoutChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setSelectedItem(event.target.value);
   };
+  // 데이터 생성하기
+  const createWorkout = async () => {
+    workoutList.map(async (item: Workout) => {
+      const { data, error } = await supabase.from('workouts').insert([
+        {
+          id: item.id,
+          date: getTodayDate(),
+          part: bodyPartInKorean,
+          name: item.name,
+          sets: item.sets,
+          reps: item.reps,
+          weight: item.weight,
+          isDone: false,
+        },
+      ]);
+      if (error) console.error('Error: ', error);
+      else console.log('Created workout: ', data);
+    });
+  };
+
   return (
     <Container>
       <Box2>
@@ -37,7 +64,7 @@ const StartingPage = () => {
         <AddWorkoutBox>
           <SelectWorkout
             value={selectedItem}
-            onChange={handleChange}>
+            onChange={handleWorkoutChange}>
             <option value=''>---&nbsp;운동 선택&nbsp;---</option>
             {sortOfWorkout[bodyPartInKorean].map((item, index) => (
               <option
@@ -70,16 +97,33 @@ const StartingPage = () => {
           KG
           <AddWorkoutBtn
             onClick={() => {
+              if (selectedItem === '') {
+                alert('운동을 선택해주세요!');
+                return;
+              }
+              if (sets === '') {
+                alert('세트를 입력해주세요!');
+                return;
+              }
+              if (reps === '') {
+                alert('회수를 입력해주세요!');
+                return;
+              }
+              if (weight === '') {
+                alert('무게를 입력해주세요!');
+                return;
+              }
               setWorkoutList((prevWorkoutList) => [
                 ...prevWorkoutList,
                 {
                   id: uuid,
-                  date: Date(),
+                  date: getTodayDate(),
                   part: decodeURIComponent(bodyPart),
                   name: selectedItem,
                   sets: sets,
                   reps: reps,
                   weight: weight,
+                  isDone: false,
                 },
               ]);
               setSets('');
@@ -95,14 +139,14 @@ const StartingPage = () => {
           {workoutList.map((item) => (
             <WorkoutList key={item.id}>
               {`${item.name} : ${item.sets} 세트 X  ${item.reps} 회 X ${item.weight} KG`}
-              <TrashIcon onClick={() => handleDelete(item.id)} />
+              <TrashIcon onClick={() => deleteWorkout(item.id)} />
             </WorkoutList>
           ))}
         </WorkoutBox>
       </Box2>
       <Box3>
         <StartBtnBox>
-          <StartBtn>운동 시작!</StartBtn>
+          <StartBtn onClick={() => createWorkout()}>운동 시작!</StartBtn>
         </StartBtnBox>
       </Box3>
     </Container>
@@ -232,6 +276,10 @@ const StartBtn = styled.button`
   border-radius: 10px;
   background: #e132ba;
   box-shadow: -13px 10px 34px #2f2159, 13px -10px 34px #573da5;
+  &:hover {
+    color: #ffffff;
+    background-color: #000000;
+  }
 `;
 
 const WorkoutList = styled.li`

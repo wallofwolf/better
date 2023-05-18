@@ -15,6 +15,7 @@ import {
   Bar,
 } from 'recharts';
 import styled from 'styled-components';
+import { supabase } from '../../lib/superbase';
 
 // 요소 100를 가진 배열 생성
 const chain = Array.from({ length: 110 }, (_, i) => i);
@@ -88,6 +89,14 @@ const items = [
 ];
 
 const Home = () => {
+  // 데이터 가져오기
+  async function fetchData() {
+    let { data, error } = await supabase.from('your-table-name').select('*');
+
+    if (error) console.error('Error: ', error);
+    else console.log('Data: ', data);
+  }
+
   const api =
     'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=30&q=운동&key=AIzaSyAed5yCicGD71RKvBz2182ewsrJxaf-DPc';
 
@@ -96,6 +105,23 @@ const Home = () => {
     const data = await response.json();
     console.log('🚀 ~ file: page.tsx:95 ~ getWokroutVideos ~ data:', data);
   };
+
+  // 데이터 생성하기
+  async function createWorkout() {
+    const { data, error } = await supabase
+      .from('workouts')
+      .insert([
+        { 
+          name: 'Morning Run', 
+          duration: 30, 
+          type: 'Running', 
+          date: new Date().toISOString() 
+        },
+      ]);
+  
+    if (error) console.error('Error: ', error)
+    else console.log('Created workout: ', data)
+  }
 
   const carouselRef = useRef(null);
 
