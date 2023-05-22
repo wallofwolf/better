@@ -1,8 +1,8 @@
+'use client';
+
 import styled from 'styled-components';
 import { getTodayDate, bodyPartsList } from '../data';
 import { useRouter } from 'next/navigation';
-
-
 
 const WorkoutToday = () => {
   const router = useRouter();

@@ -37,12 +37,7 @@ export const images = [
 export const bodyPartsList = ['가슴', '어깨', '하체', '등', '팔'];
 
 export const data = [
-  {
-    name: 'Page A',
-    체중: 80,
-    지방량: 30,
-    골격근량: 50,
-  },
+  
   {
     name: 'Page B',
     체중: 80,

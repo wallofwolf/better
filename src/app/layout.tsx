@@ -1,15 +1,12 @@
-import './globals.css';
-import StyledComponentsRegistry from '../../lib/registry';
 import Header from './components/Header';
+import './globals.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='ko'>
       <body>
-        <StyledComponentsRegistry>
-          <Header></Header>
-          {children}
-        </StyledComponentsRegistry>
+        <Header></Header>
+        {children}
       </body>
     </html>
   );
