@@ -12,9 +12,9 @@ interface Workout {
   date: string;
   part: string;
   name: string;
-  sets: string;
-  reps: string;
-  weight: string;
+  sets: number;
+  reps: number;
+  weight: number;
   isDone: boolean;
 }
 
@@ -24,9 +24,9 @@ const StartingPage = () => {
   const bodyPartInKorean = decodeURIComponent(bodyPart);
   const [workoutList, setWorkoutList] = useState<Workout[]>([]);
   const [name, setName] = useState('');
-  const [sets, setSets] = useState('');
-  const [weight, setWeight] = useState('');
-  const [reps, setReps] = useState('');
+  const [sets, setSets] = useState(0);
+  const [weight, setWeight] = useState(0);
+  const [reps, setReps] = useState(0);
   const [selectedItem, setSelectedItem] = useState('');
 
   const deleteWorkout = (id: string) => {
@@ -48,6 +48,7 @@ const StartingPage = () => {
           sets: item.sets,
           reps: item.reps,
           weight: item.weight,
+          totalVolume: item.sets * item.reps * item.weight,
           isDone: false,
         },
       ]);
@@ -79,21 +80,21 @@ const StartingPage = () => {
             type='text'
             maxLength={3}
             value={sets}
-            onChange={(e) => setSets(e.target.value)}
+            onChange={(e) => setSets(Number(e.target.value))}
           />
           세트
           <AddInput
             type='text'
             maxLength={3}
             value={reps}
-            onChange={(e) => setReps(e.target.value)}
+            onChange={(e) => setReps(Number(e.target.value))}
           />
           회
           <AddInput
             type='text'
             maxLength={3}
             value={weight}
-            onChange={(e) => setWeight(e.target.value)}
+            onChange={(e) => setWeight(Number(e.target.value))}
           />
           KG
           <AddWorkoutBtn
@@ -102,22 +103,22 @@ const StartingPage = () => {
                 alert('운동을 선택해주세요!');
                 return;
               }
-              if (sets === '') {
+              if (sets === 0) {
                 alert('세트를 입력해주세요!');
                 return;
               }
-              if (reps === '') {
+              if (reps === 0) {
                 alert('회수를 입력해주세요!');
                 return;
               }
-              if (weight === '') {
+              if (weight === 0) {
                 alert('무게를 입력해주세요!');
                 return;
               }
               setWorkoutList((prevWorkoutList) => [
                 ...prevWorkoutList,
                 {
-                  id: uuid,
+                  id: self.crypto.randomUUID(),
                   date: getTodayDate(),
                   part: decodeURIComponent(bodyPart),
                   name: selectedItem,
@@ -127,9 +128,9 @@ const StartingPage = () => {
                   isDone: false,
                 },
               ]);
-              setSets('');
-              setReps('');
-              setWeight('');
+              setSets(0);
+              setReps(0);
+              setWeight(0);
               setSelectedItem('');
             }}>
             <AddIcon />

@@ -1,24 +1,100 @@
 'use client';
 
-import { Bar, BarChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { data } from '../data';
+import { useEffect, useState } from 'react';
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  Tooltip,
+  CartesianGrid,
+  Legend,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { supabase } from '../../../lib/superbase';
+
+interface Workout {
+  id: string;
+  data: string;
+  part: string;
+  name: string;
+  sets: string;
+  reps: string;
+  weight: string;
+  isDone: boolean;
+}
 
 const DashboardWorkout = () => {
+  const [workout, setWorkout] = useState<Workout[]>([]);
+
+  const getBodyStatus = async () => {
+    const { data, error } = await supabase
+      .from('workouts')
+      .select()
+      .order('date', { ascending: false })
+      .limit(1);
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    const latestDate = data[0]?.date;
+    if (latestDate) {
+      getGet(latestDate);
+    }
+  };
+
+  const getGet = async (date: string) => {
+    const { data, error } = await supabase.from('workouts').select().eq('date', date);
+    if (error) {
+      console.log(error);
+      return;
+    }
+    setWorkout(data as Workout[]);
+  };
+
+  useEffect(() => {
+    getBodyStatus();
+  }, []);
   return (
     <>
-      {/* 가장 마지막으로 한 운동 부위와 종목을 그 직전 데이터와 비교한 수치를 시각적으로 보여주는
-대시보드를 구성하면 될 듯 */}
       <ResponsiveContainer
         width='100%'
         height='100%'>
         <BarChart
-          width={150}
-          height={40}
-          data={data}>
+          width={500}
+          height={300}
+          data={workout}
+          margin={{
+            top: 20,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}>
+          <CartesianGrid strokeDasharray='3 3' />
+          <XAxis dataKey='name' />
+          <YAxis />
           <Tooltip />
+          <Legend />
           <Bar
-            dataKey='지방량'
-            fill='#8884d8'
+            dataKey='totalVolume'
+            stackId='a'
+            fill='#e132ba'
+          />
+          <Bar
+            dataKey='weight'
+            stackId='b'
+            fill='#5a54d3'
+          />
+          <Bar
+            dataKey='sets'
+            stackId='b'
+            fill='#d5d5e0'
+          />
+          <Bar
+            dataKey='reps'
+            stackId='b'
+            fill='#82ca9d'
           />
         </BarChart>
       </ResponsiveContainer>
