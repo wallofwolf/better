@@ -1,20 +1,26 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IoArrowBackOutline, IoArrowForwardOutline } from 'react-icons/io5';
 import styled from 'styled-components';
 import { items } from '../data';
 
 const WorkoutVideo = () => {
+  const [videos, setVideos] = useState([]);
   // 유튜브 가져오기
   const api =
-    'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=30&q=운동&key=AIzaSyAed5yCicGD71RKvBz2182ewsrJxaf-DPc';
+    'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=9&type=video&q=운동&key=AIzaSyAed5yCicGD71RKvBz2182ewsrJxaf-DPc';
 
   const getWokroutVideos = async () => {
     const response = await fetch(api);
     const data = await response.json();
-    console.log('🚀 ~ file: page.tsx:95 ~ getWokroutVideos ~ data:', data);
+    const videoID = data.items.map((item) => item.id.videoId);
+    setVideos(videoID);
   };
+
+  useEffect(() => {
+    getWokroutVideos();
+  }, []);
 
   // 운동 배우기
   const carouselRef = useRef(null);
@@ -34,8 +40,13 @@ const WorkoutVideo = () => {
       <CarouselWrapper>
         <PrevButton onClick={handlePrev}>&lt;</PrevButton>
         <CarouselContainer ref={carouselRef}>
-          {items.map((item, index) => (
-            <CarouselItem key={index}>{/* 여기 동영상 삽입 */}</CarouselItem>
+          {videos.map((item, index) => (
+            <CarouselItem
+              key={index}
+              src={`https://www.youtube.com/embed/${videos[index]}`}
+              frameBorder='0'
+              allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+              allowFullScreen></CarouselItem>
           ))}
         </CarouselContainer>
         <NextButton onClick={handleNext}>&gt;</NextButton>
@@ -59,7 +70,7 @@ const CarouselContainer = styled.div`
   gap: 1rem;
 `;
 
-const CarouselItem = styled.div`
+const CarouselItem = styled.iframe`
   flex: 0 0 auto;
   width: calc(100% / 3); /* Display 3 items at a time */
   scroll-snap-align: start;
