@@ -2,7 +2,6 @@ import DashboardBody from './components/DashboardBody';
 import DashboardWorkout from './components/DashboardWorkout';
 import NowDoingBoard from './components/NowDoingBoard';
 import RecordBodyStatus from './components/RecordBodyStatus';
-import WorkoutChain from './components/WorkoutChain';
 import WorkoutToday from './components/WorkoutToday';
 import WorkoutVideo from './components/WorkoutVideo';
 import styles from './home.module.css';
@@ -13,9 +12,6 @@ const Home = () => {
       <div className={styles.box1}>
         <div className={styles.mediumWidget}>
           <WorkoutToday />
-        </div>
-        <div className={styles.mediumWidget}>
-          <WorkoutChain />
         </div>
       </div>
       <div className={styles.box2}>

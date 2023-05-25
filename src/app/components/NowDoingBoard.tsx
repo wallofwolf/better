@@ -1,73 +1,87 @@
 'use client';
 
 import styled from 'styled-components';
+import { supabase } from '../../../lib/superbase';
+import { useEffect, useState } from 'react';
+
+type Workout = {
+  id: string;
+  date: string;
+  part: string;
+  name: string;
+  sets: number;
+  reps: number;
+  weight: number;
+  isDone: boolean;
+  totalVolume: number;
+  isSetDone: number[];
+};
 
 const NowDoingBoard = () => {
+  const [nowWorkoutList, setNowWorkoutList] = useState<Workout[]>([]);
+  console.log('🚀 ~ file: NowDoingBoard.tsx:21 ~ NowDoingBoard ~ nowWorkoutList:', nowWorkoutList);
+
+  const getNowWorkoutList = async () => {
+    const { data, error } = await supabase.from('workouts').select('*').eq('isDone', false);
+    if (error) {
+      console.error('Error: ', error);
+      return;
+    }
+    setNowWorkoutList(data);
+  };
+
+  const handleCheck = (id: string, index: number, checked: boolean) => {
+    setNowWorkoutList((prevWorkouts) =>
+      prevWorkouts.map((workout) => {
+        if (workout.id === id) {
+          let updatedSets = [...workout.isSetDone];
+          updatedSets[index] = checked ? 1 : 0;
+          return { ...workout, isSetDone: updatedSets };
+        } else {
+          return workout;
+        }
+      })
+    );
+  };
+
+  const handleDoneBTNClick = async (id) => {
+    const { error } = await supabase
+      .from('workouts')
+      .update({
+        isSetDone: nowWorkoutList.filter((item) => item.id === id)[0].isSetDone,
+        isDone: true,
+      })
+      .eq('id', id);
+  };
+
+  useEffect(() => {
+    getNowWorkoutList();
+  }, []);
   return (
     <>
       <DuringWorkout>진행 중인 운동</DuringWorkout>
       <WorkoutBox>
         <WorkoutToDo>
-          <WorkoutPart>
-            🏋️‍♀️&nbsp;가슴
-            <WorkoutName>
-              플랫 벤치 프레스
-              <WorkoutStatus>
-                <CheckBox type='checkbox' />
-                <Set>1세트</Set>
-                <Rep>10회</Rep>
-                <Weight>50KG</Weight>
-              </WorkoutStatus>
-              <WorkoutStatus>
-                <CheckBox type='checkbox' />
-                <Set>2세트</Set>
-                <Rep>10회</Rep>
-                <Weight>50KG</Weight>
-              </WorkoutStatus>
-              <WorkoutStatus>
-                <CheckBox type='checkbox' />
-                <Set>3세트</Set>
-                <Rep>10회</Rep>
-                <Weight>50KG</Weight>
-              </WorkoutStatus>
-              <WorkoutStatus>
-                <CheckBox type='checkbox' />
-                <Set>4세트</Set>
-                <Rep>10회</Rep>
-                <Weight>50KG</Weight>
-              </WorkoutStatus>
-              <WorkoutStatus>
-                <CheckBox type='checkbox' />
-                <Set>5세트</Set>
-                <Rep>10회</Rep>
-                <Weight>50KG</Weight>
-              </WorkoutStatus>
-              <WorkoutStatus>
-                <CheckBox type='checkbox' />
-                <Set>6세트</Set>
-                <Rep>10회</Rep>
-                <Weight>50KG</Weight>
-              </WorkoutStatus>
-              <WorkoutStatus>
-                <CheckBox type='checkbox' />
-                <Set>7세트</Set>
-                <Rep>10회</Rep>
-                <Weight>50KG</Weight>
-              </WorkoutStatus>
-              <WorkoutStatus>
-                <CheckBox type='checkbox' />
-                <Set>8세트</Set>
-                <Rep>10회</Rep>
-                <Weight>50KG</Weight>
-              </WorkoutStatus>
-              <WorkoutStatus>
-                <CheckBox type='checkbox' />
-                <Set>9세트</Set>
-                <Rep>10회</Rep>
-                <Weight>50KG</Weight>
-              </WorkoutStatus>
-            </WorkoutName>
-          </WorkoutPart>
+          {nowWorkoutList.map((item) => (
+            <WorkoutPart>
+              🏋️‍♀️ {item.part}
+              <WorkoutName>
+                {item.name}
+                {item.isSetDone?.map((sets, index) => (
+                  <WorkoutStatus key={index}>
+                    <CheckBox
+                      onChange={(e) => handleCheck(item.id, index, e.target.checked)}
+                      type='checkbox'
+                    />
+                    <Set>{`${index + 1}세트`}</Set>
+                    <Rep>{item.reps}회</Rep>
+                    <Weight>{item.weight}KG</Weight>
+                  </WorkoutStatus>
+                ))}
+              </WorkoutName>
+              <DoneBTN onClick={() => handleDoneBTNClick(item.id)}>끝!</DoneBTN>
+            </WorkoutPart>
+          ))}
         </WorkoutToDo>
       </WorkoutBox>
     </>
@@ -122,4 +136,20 @@ const CheckBox = styled.input`
   border-radius: 0.3125rem;
   border: none;
   cursor: pointer;
+`;
+
+const DoneBTN = styled.button`
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 1rem;
+  /* padding: 15px 50px; */
+  border-radius: 5px;
+  background: #e132ba;
+  margin: 1rem 0;
+  width: 100%;
+  &:hover {
+    color: #ffffff;
+    background-color: #000000;
+  }
 `;

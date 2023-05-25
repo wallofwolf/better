@@ -6,6 +6,7 @@ import { ChangeEvent, useState } from 'react';
 import { IoAddOutline, IoCloseOutline } from 'react-icons/io5';
 import styled from 'styled-components';
 import { supabase } from '../../../../../lib/superbase';
+import { useRecoilState } from 'recoil';
 
 interface Workout {
   id: string;
@@ -50,6 +51,7 @@ const StartingPage = () => {
           weight: item.weight,
           totalVolume: item.sets * item.reps * item.weight,
           isDone: false,
+          isSetDone: new Array(item.sets).fill(0),
         },
       ]);
       if (error) console.error('Error: ', error);

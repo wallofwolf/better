@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { IoArrowBackOutline, IoArrowForwardOutline } from 'react-icons/io5';
 import styled from 'styled-components';
-import { items } from '../data';
 
 const WorkoutVideo = () => {
   const [videos, setVideos] = useState([]);
@@ -72,7 +71,7 @@ const CarouselContainer = styled.div`
 
 const CarouselItem = styled.iframe`
   flex: 0 0 auto;
-  width: calc(100% / 3); /* Display 3 items at a time */
+  width: calc(100% / 3);
   scroll-snap-align: start;
   background-color: #0000003e;
   height: 7rem;
